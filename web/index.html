@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#10251f">
+  <title>ABC Pharmaceuticals — Microservices Demonstrator</title>
+  <link rel="icon" href="/static/favicon.svg?v=2" type="image/svg+xml">
+  <link rel="stylesheet" href="/static/style.css">
+  <script defer src="/static/app.js"></script>
+</head>
+<body>
+  <aside class="sidebar">
+    <a class="brand" href="/" aria-label="ABC Pharmaceuticals — Microservices Demonstrator home"><img class="brand-logo" src="/static/favicon.svg?v=2" alt="" width="40" height="40"><span>ABC Pharmaceuticals<small>MICROSERVICES DEMONSTRATOR</small></span></a>
+    <div class="sidebar-label">ENTERPRISE WORKSPACE</div>
+    <nav aria-label="Main navigation">
+      <a class="nav-link active" href="#live-system"><span>▦</span> Live system <i>01</i></a>
+      <a class="nav-link" href="#inventory"><span>⇄</span> Stock & enquiries <i>02</i></a>
+      <a class="nav-link" href="#execution-evidence"><span>≋</span> Execution evidence <i>03</i></a>
+    </nav>
+    <div class="sidebar-note"><span class="eyebrow">THE MIGRATION PATTERN</span><strong>Extract a capability.<br>Not the entire system.</strong><p>The legacy application keeps stock authority. One bounded microservice handles enquiries.</p><span class="pattern-tag">INCREMENTAL EXTRACTION</span></div>
+    <div class="sidebar-bottom"><span class="local-dot"></span> Local prototype <span class="version">v1.0</span><small>ECS323 · Enterprise Computing Systems<br>Fictional inventory · no patient data</small></div>
+  </aside>
+
+  <div class="main-shell">
+    <header class="topbar"><div><span class="breadcrumb">ABC Pharmaceuticals</span><span class="slash">/</span><span>Live demonstrator</span></div><div class="topbar-right"><span class="environment"><span class="dot green"></span> LOCAL ENVIRONMENT</span><span class="connection" id="connection">Connecting…</span></div></header>
+    <main>
+        <div class="page-heading"><div><div class="eyebrow">OBSERVABLE BY DESIGN</div><h1>Small service. <span>Clear boundaries.</span></h1><p>A working inventory enquiry extraction. Follow real requests, inspect events, and test what happens when a component stops.</p></div><a class="subtle-button button-link" href="/docs" target="_blank" rel="noopener" data-hint="Open the local console's HTTP API reference in a new tab.">Open API docs ↗</a></div>
+
+        <section class="metric-strip" aria-label="Live system summary">
+          <div class="metric"><span class="metric-label">BUSINESS MICROSERVICES</span><div><strong>01</strong><span class="metric-note">Inventory enquiries</span></div></div>
+          <div class="metric"><span class="metric-label">INDEPENDENT PROCESSES</span><div><strong id="running-count">—</strong><span class="metric-note">of 4 running <span id="process-dot" class="dot green"></span></span></div></div>
+          <div class="metric"><span class="metric-label">QUEUED DELIVERIES</span><div><strong id="queue-count">—</strong><span class="metric-note" id="queue-note">Durable, acknowledged</span></div></div>
+          <div class="metric"><span class="metric-label">ENQUIRY DATA</span><div><strong class="metric-state" id="data-state">Connecting</strong><span class="metric-note" id="feed-age">Checking source checkpoint</span></div></div>
+        </section>
+
+        <section id="live-system" class="panel architecture-panel" aria-labelledby="architecture-title">
+          <div class="panel-heading"><div><h2 id="architecture-title">The system, made visible <span class="live-label"><span class="dot green"></span> LIVE</span></h2><p>Boxes show ownership. Connections light up only when real operations are recorded.</p></div></div>
+          <div class="architecture-map">
+            <div id="legacy-boundary" class="boundary legacy-boundary" data-state="unknown">
+              <div class="boundary-caption"><span class="boundary-number">A</span><div><strong>Existing legacy system</strong><small>Authoritative stock owner</small></div><span id="legacy-runtime" class="runtime-status" role="status">Checking…</span></div>
+              <article class="process-card" id="card-legacy"><div class="process-title"><span class="component-icon legacy-icon">▤</span><div><h3>Stock application</h3><span>Writes stock · publishes events</span></div><span class="status-dot" id="dot-legacy"></span></div><div class="process-meta"><code id="meta-legacy">Starting process…</code><button class="process-toggle" data-process="legacy" disabled><span class="button-icon" aria-hidden="true">■</span> Stop stock app</button></div></article>
+              <div class="vertical-link" data-edge="legacy-db"><span>transaction + outbox</span></div>
+              <div class="database-card"><span class="db-icon"></span><div><strong>Legacy database</strong><small>Stock + versions + transactional outbox</small></div><span class="ownership">READ / WRITE</span></div>
+              <div class="boundary-foot"><span>✓ Owns all stock changes</span><span>✓ Remains independent</span></div>
+            </div>
+            <div class="infrastructure-zone">
+              <div class="flow-connector horizontal" data-edge="legacy-queue"><span>committed<br>events</span><div class="flow-line"></div></div>
+              <article class="queue-card" id="card-broker"><span class="infra-label">INFRASTRUCTURE</span><div class="queue-icon">≋</div><h3>Durable queue</h3><p>Buffer · lease · ACK</p><div class="queue-value"><span id="diagram-pending">0</span> waiting</div><code id="meta-broker">Starting…</code><div class="queue-bottom"><span id="dot-broker" class="status-dot"></span><button class="process-toggle" data-process="broker" disabled><span class="button-icon" aria-hidden="true">■</span> Stop queue</button></div></article>
+              <div class="flow-connector horizontal" data-edge="queue-worker"><span>HTTP delivery<br>+ acknowledgement</span><div class="flow-line"></div></div>
+            </div>
+            <div id="enquiry-boundary" class="boundary enquiry-boundary" data-state="unknown">
+              <div class="boundary-caption"><span class="boundary-number">B</span><div><strong>Inventory Enquiry Microservice</strong><small>One business capability · independently deployable</small></div><span id="enquiry-runtime" class="runtime-status" role="status">Checking…</span></div>
+              <div class="enquiry-components">
+                <div><article class="process-card" id="card-worker"><div class="process-title"><span class="component-icon worker-icon">⇄</span><div><h3>Sync worker</h3><span>Consumes events · owns writes</span></div><span class="status-dot" id="dot-worker"></span></div><div class="process-meta"><code id="meta-worker">Starting process…</code><button class="process-toggle" data-process="worker" disabled><span class="button-icon" aria-hidden="true">■</span> Stop sync worker</button></div></article><div class="vertical-link" data-edge="worker-db"><span>apply stock + checkpoint ↓</span></div></div>
+                <div><article class="process-card" id="card-enquiry"><div class="process-title"><span class="component-icon api-icon">{}</span><div><h3>Enquiry API</h3><span>Validates freshness · serves reads</span></div><span class="status-dot" id="dot-enquiry"></span></div><div class="process-meta"><code id="meta-enquiry">Starting process…</code><button class="process-toggle" data-process="enquiry" disabled><span class="button-icon" aria-hidden="true">■</span> Stop enquiry API</button></div></article><div class="vertical-link" data-edge="enquiry-db"><span>↑ read-only snapshot</span></div></div>
+              </div>
+              <div class="database-card enquiry-database"><span class="db-icon"></span><div><strong>Enquiry-owned database</strong><small>Read model + applied event IDs + verified checkpoint</small></div><span class="ownership">SEPARATE DATA</span></div>
+              <div class="boundary-foot"><span>✓ Never reads the legacy database</span><span>✓ API and worker share this boundary</span></div>
+            </div>
+          </div>
+          <div class="diagram-caption"><span><span class="legend-line"></span> Actual HTTP communication</span><span><span class="legend-box"></span> Business / data ownership boundary</span><span class="caption-note">4 processes ≠ 4 microservices. The queue is infrastructure.</span></div>
+        </section>
+
+        <div id="inventory" class="operations-grid">
+          <section class="panel action-panel" aria-labelledby="legacy-title">
+            <div class="panel-heading"><div><span class="section-kicker">A / AUTHORITATIVE WRITE</span><h2 id="legacy-title">Change stock in the legacy system</h2></div><span class="pill neutral">Legacy capability</span></div>
+            <div class="panel-body"><label for="medicine">Medicine <span>Fictional demonstration data</span></label><select id="medicine" name="medicine" aria-label="Select medicine"><option value="AMX-500">Amoxicillin 500 mg · AMX-500</option><option value="PAR-500">Paracetamol 500 mg · PAR-500</option><option value="IBU-200">Ibuprofen 200 mg · IBU-200</option><option value="CET-010">Cetirizine 10 mg · CET-010</option><option value="MET-500">Metformin 500 mg · MET-500</option><option value="SAL-100">Salbutamol 100 mcg · SAL-100</option></select>
+              <div class="stock-editor"><div class="source-stock"><span>Current authoritative stock</span><strong id="legacy-quantity">— <small>packs</small></strong><code id="legacy-version">Version —</code></div><form id="stock-form"><label for="quantity">New quantity</label><div class="quantity-input"><input id="quantity" name="quantity" type="number" min="0" max="1000000" value="80" required><span id="input-unit">packs</span></div><button class="primary-button" id="update-button" type="submit" data-hint="Save this quantity in the legacy database and publish its stock-change event."><span class="button-icon" aria-hidden="true">✓</span> Save stock</button></form></div>
+              <div class="ownership-note"><span>↳</span><p><strong>This action writes only to the legacy database.</strong> An event moves the change across the boundary. No shared database or direct stock write to the microservice.</p></div>
+              <div class="action-feedback" id="write-feedback" role="status">Ready to commit a stock change.</div>
+            </div>
+          </section>
+          <section class="panel result-panel" aria-labelledby="enquiry-title">
+            <div class="panel-heading"><div><span class="section-kicker">B / INDEPENDENT READ</span><h2 id="enquiry-title">Ask the enquiry microservice</h2></div><span id="result-badge" class="pill neutral">Waiting</span></div>
+            <div class="panel-body">
+              <div class="enquiry-toolbar"><code id="request-path">GET /inventory/AMX-500</code><button class="subtle-button" id="query-button" data-hint="Ask the enquiry API for this medicine's verified stock. This does not read the legacy database."><span class="button-icon" aria-hidden="true">↻</span> Check stock</button></div>
+              <div class="enquiry-result" id="enquiry-result"><div class="result-icon">✓</div><div><span class="result-label" id="result-label">Waiting for a verified response</span><div class="result-number" id="result-quantity">—</div><p id="result-description">The API checks completeness and feed age before returning stock.</p></div></div>
+              <div class="response-details"><div><span>RECORD VERSION</span><strong id="result-version">—</strong></div><div><span>VERIFIED FEED AGE</span><strong id="result-feed-age">—</strong></div><div><span>HTTP / SERVER READ</span><strong id="result-latency">—</strong></div></div>
+              <div class="enquiry-bottom"><label class="checkbox-label" data-hint="Repeat the enquiry every three seconds. Turning this off keeps the last response on screen."><input id="auto-query" type="checkbox" checked> Auto-check stock (3s)</label><button class="subtle-button" id="response-button" data-hint="Open the most recent HTTP status and JSON returned by the enquiry API." disabled><span class="button-icon" aria-hidden="true">{}</span> View API response</button></div><div class="response-timestamp" id="response-timestamp">No response yet.</div>
+            </div>
+          </section>
+        </div>
+
+        <section class="panel experiment-panel" aria-labelledby="experiment-title">
+          <div class="experiment-intro"><span class="component-icon experiment-icon">⌁</span><div><h2 id="experiment-title">Prove the independence</h2><p>These controls stop and restart real processes—not UI simulations.</p></div></div>
+          <div class="experiment-actions"><button class="experiment-button" id="worker-experiment" disabled><span class="button-icon" aria-hidden="true">■</span><strong>Stop sync worker</strong></button><button class="experiment-button" id="restart-api" data-hint="Restart only the enquiry API process. The legacy stock application stays running."><span class="button-icon" aria-hidden="true">↻</span><strong>Restart enquiry API</strong></button><button class="experiment-button" id="replay-event" data-hint="Send the same stock-change event again. The worker should ignore its duplicate effect."><span class="button-icon" aria-hidden="true">⤴</span><strong>Resend last stock event</strong></button><button class="experiment-button" id="security-check" data-hint="Call the enquiry API without a service key. Expected result: HTTP 401, request denied."><span class="button-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="m12 3 8 3v6c0 4-4 7-8 9-4-2-8-5-8-9V6z"/><path d="m8 12 3 3 5-6"/></svg></span><strong>Test request without key</strong></button></div>
+          <div id="experiment-feedback" class="experiment-feedback" role="status">Try: stop worker → save stock → wait past 30s → check stock → start worker.</div>
+        </section>
+
+        <section id="execution-evidence" class="panel timeline-panel" aria-labelledby="timeline-title"><div class="panel-heading"><div><h2 id="timeline-title">Execution evidence <span class="event-count" id="event-count">0</span></h2><p>Real service logs. Select an event to inspect its payload and correlation ID.</p></div><div class="timeline-controls"><label class="checkbox-label" data-hint="Include source checkpoints, sent every three seconds to verify the update feed is complete and recent."><input id="show-checkpoints" type="checkbox"> Show heartbeat events</label><button class="subtle-button" id="clear-timeline" data-hint="Hide the currently displayed events. Stored service logs are not deleted." disabled>Clear visible log</button></div></div><div class="timeline-header"><span>TIME</span><span>COMPONENT</span><span>WHAT ACTUALLY HAPPENED</span><span>DETAILS</span></div><div id="timeline" class="timeline" aria-label="Execution event log"><div class="empty-state">Waiting for the first real operation. Try changing stock above.</div></div><div class="timeline-footer"><span>Source checkpoints every 3s · one globally sequenced event stream</span><span id="checkpoint-summary">Applied checkpoint: —</span></div></section>
+        <footer class="page-footer"><span>Built to explain architecture, not hide it.</span><span>Local prototype · fictional inventory</span></footer>
+    </main>
+  </div>
+  <dialog id="detail-dialog"><div class="dialog-header"><div><span class="section-kicker">ACTUAL EXECUTION DATA</span><h2 id="dialog-title">Event details</h2></div><button class="icon-button" id="close-dialog" aria-label="Close details" data-hint="Close this event or API response.">×</button></div><p id="dialog-description"></p><pre id="dialog-payload"></pre><div class="dialog-footer"><span>No patient data. Local demonstration only.</span><button class="subtle-button" id="copy-payload" data-hint="Copy the displayed JSON to your clipboard.">Copy JSON</button></div></dialog>
+  <div id="control-hint" class="control-hint" role="tooltip" hidden></div>
+  <div id="toast" class="toast" role="status" hidden></div>
+</body>
+</html>
