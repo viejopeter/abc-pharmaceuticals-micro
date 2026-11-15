@@ -42,21 +42,11 @@ The same commands work in PowerShell. If using WSL, run them in the WSL terminal
 
 The **Inventory Enquiry Microservice** is one business capability, comprising its API, synchronisation worker and separately owned read model. The legacy stock application remains authoritative. The queue is infrastructure, not another business microservice.
 
-```mermaid
-flowchart LR
-    B[Browser] --> C[Local console]
-    subgraph Legacy["Existing legacy system"]
-        L[Stock application] --> LD[(Legacy database)]
-    end
-    C -->|Stock updates| L
-    L -->|Committed events| Q[Durable queue]
-    subgraph Microservice["Inventory Enquiry Microservice"]
-        W[Synchronisation worker] -->|Apply events| ED[(Enquiry database)]
-        E[Enquiry API] -->|Read-only snapshot| ED
-    end
-    Q -->|Event delivery| W
-    C -->|Stock enquiries| E
-```
+[![Architecture showing the authoritative legacy system, durable event queue, and Inventory Enquiry Microservice with its API, worker and separately owned database](docs/architecture/inventory-enquiry.drawio.svg)](docs/architecture/inventory-enquiry.drawio.svg)
+
+[Editable draw.io source](docs/architecture/inventory-enquiry.drawio) · [Full-size SVG](docs/architecture/inventory-enquiry.drawio.svg)
+
+Blue connections show HTTP request paths; dashed amber connections show asynchronous event flow over HTTP. Database access stays within its owning business boundary. Health, diagnostics and process-control routes are omitted for clarity.
 
 The console hosts the interface, forwards requests over HTTP and controls the four named backend processes. It never reads business databases. The enquiry service never reads the legacy database.
 
@@ -137,6 +127,7 @@ Green **Running** boundaries show responding processes with active background co
 
 ```text
 abc-pharmaceuticals-micro/
+├── docs/architecture/   Editable draw.io diagram and SVG preview
 ├── services/
 │   ├── console.py       Interface host, HTTP proxy and process supervisor
 │   ├── legacy.py        Authoritative stock and outbox publisher

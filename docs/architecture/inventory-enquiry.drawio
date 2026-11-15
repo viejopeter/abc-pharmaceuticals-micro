@@ -1,0 +1,105 @@
+<mxfile host="Electron">
+  <diagram id="inventory-enquiry-architecture" name="Inventory enquiry architecture">
+    <mxGraphModel dx="1776" dy="1079" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="0" page="0" pageScale="1" pageWidth="1420" pageHeight="1000" background="#FFFFFF" math="0" shadow="0" adaptiveColors="none">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="browser" parent="1" style="rounded=1;arcSize=12;whiteSpace=wrap;html=1;fontFamily=Arial;fontSize=21;fontColor=#24452f;strokeColor=#c1d0bb;strokeWidth=1.5;fillColor=#f5f8f1;spacing=12;" value="&lt;b&gt;Staff browser&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:15px&quot; color=&quot;#617465&quot;&gt;Stock actions + live evidence&lt;/font&gt;" vertex="1">
+          <mxGeometry height="75" width="240" x="490" y="145" as="geometry" />
+        </mxCell>
+        <mxCell id="console" parent="1" style="rounded=1;arcSize=12;whiteSpace=wrap;html=1;fontFamily=Arial;fontSize=21;fontColor=#294967;strokeColor=#9db5d0;strokeWidth=1.5;fillColor=#eef4fb;spacing=12;" value="&lt;b&gt;Local console&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:16px&quot; color=&quot;#49657f&quot;&gt;FastAPI · :8100&lt;/font&gt;&lt;br&gt;&lt;font style=&quot;font-size:14px&quot; color=&quot;#61758a&quot;&gt;UI · request proxy · process controls&lt;/font&gt;" vertex="1">
+          <mxGeometry height="90" width="300" x="460" y="260" as="geometry" />
+        </mxCell>
+        <mxCell id="legacy" parent="1" style="swimlane;horizontal=1;startSize=78;container=1;collapsible=0;rounded=1;arcSize=8;html=1;whiteSpace=wrap;fontFamily=Arial;fontSize=22;fontColor=#354d32;fillColor=#eef2e6;swimlaneFillColor=#f8faf4;strokeColor=#b8c9ab;strokeWidth=2;align=left;verticalAlign=middle;spacingLeft=18;" value="&lt;b&gt;Existing legacy system&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:15px&quot; color=&quot;#6c7865&quot;&gt;Authoritative inventory owner&lt;/font&gt;" vertex="1">
+          <mxGeometry height="420" width="330" x="60" y="340" as="geometry" />
+        </mxCell>
+        <mxCell id="stock-app" parent="legacy" style="rounded=1;arcSize=10;whiteSpace=wrap;html=1;fontFamily=Arial;fontSize=20;fontColor=#334c2e;strokeColor=#b7c7a8;strokeWidth=1.5;fillColor=#ffffff;spacing=12;" value="&lt;b&gt;Stock application&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:16px&quot; color=&quot;#66765b&quot;&gt;FastAPI · :8101&lt;/font&gt;&lt;br&gt;&lt;font style=&quot;font-size:14px&quot; color=&quot;#77826e&quot;&gt;Stock writes + event publisher&lt;/font&gt;" vertex="1">
+          <mxGeometry height="110" width="260" x="35" y="110" as="geometry" />
+        </mxCell>
+        <mxCell id="legacy-db" parent="legacy" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=14;fontFamily=Arial;fontSize=19;fontColor=#455b3c;strokeColor=#b7c7a8;strokeWidth=1.5;fillColor=#edf2e4;spacingTop=8;spacing=9;" value="&lt;b&gt;Legacy database&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:15px&quot;&gt;SQLite · stock + versions + outbox&lt;/font&gt;" vertex="1">
+          <mxGeometry height="95" width="260" x="35" y="300" as="geometry" />
+        </mxCell>
+        <mxCell id="stock-commit" edge="1" parent="legacy" source="stock-app" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#8d9a83;strokeWidth=1.8;endArrow=block;endFill=1;fontFamily=Arial;fontSize=15;fontColor=#708164;defaultLabelBackgroundColor=page;" target="legacy-db" value="Atomic commit">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="queue-label" parent="1" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;fontFamily=Arial;fontSize=12;fontStyle=1;fontColor=#9d793b;strokeColor=none;fillColor=none;" value="MESSAGING INFRASTRUCTURE" vertex="1">
+          <mxGeometry height="30" width="270" x="455" y="393" as="geometry" />
+        </mxCell>
+        <mxCell id="queue" parent="1" style="rounded=1;arcSize=12;whiteSpace=wrap;html=1;fontFamily=Arial;fontSize=20;fontColor=#775824;strokeColor=#d0b474;strokeWidth=1.5;fillColor=#fff6e3;spacing=10;" value="&lt;b&gt;Durable queue&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:16px&quot; color=&quot;#92723e&quot;&gt;HTTP · :8102&lt;/font&gt;&lt;br&gt;&lt;font style=&quot;font-size:14px&quot; color=&quot;#9c824e&quot;&gt;Lease · retry · ACK&lt;/font&gt;" vertex="1">
+          <mxGeometry height="110" width="190" x="495" y="450" as="geometry" />
+        </mxCell>
+        <mxCell id="queue-note" parent="1" style="text;html=1;align=center;verticalAlign=top;whiteSpace=wrap;fontFamily=Arial;fontSize=14;fontColor=#97805a;strokeColor=none;fillColor=none;" value="The worker pulls and&lt;br&gt;acknowledges deliveries.&lt;br&gt;&lt;b&gt;Not a business microservice.&lt;/b&gt;" vertex="1">
+          <mxGeometry height="90" width="280" x="450" y="593" as="geometry" />
+        </mxCell>
+        <mxCell id="enquiry-service" parent="1" style="swimlane;horizontal=1;startSize=78;container=1;collapsible=0;rounded=1;arcSize=8;html=1;whiteSpace=wrap;fontFamily=Arial;fontSize=22;fontColor=#235234;fillColor=#dfefda;swimlaneFillColor=#f1f8ed;strokeColor=#80ae78;strokeWidth=2;align=left;verticalAlign=middle;spacingLeft=18;" value="&lt;b&gt;Inventory Enquiry Microservice&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:15px&quot; color=&quot;#537a50&quot;&gt;One business capability · owned read model&lt;/font&gt;" vertex="1">
+          <mxGeometry height="420" width="570" x="790" y="340" as="geometry" />
+        </mxCell>
+        <mxCell id="worker" parent="enquiry-service" style="rounded=1;arcSize=10;whiteSpace=wrap;html=1;fontFamily=Arial;fontSize=19;fontColor=#2c5a36;strokeColor=#98bd88;strokeWidth=1.5;fillColor=#ffffff;spacing=10;" value="&lt;b&gt;Synchronisation worker&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:16px&quot; color=&quot;#54774b&quot;&gt;Python · :8103&lt;/font&gt;&lt;br&gt;&lt;font style=&quot;font-size:14px&quot; color=&quot;#6f8665&quot;&gt;Idempotent event processing&lt;/font&gt;" vertex="1">
+          <mxGeometry height="110" width="240" x="25" y="110" as="geometry" />
+        </mxCell>
+        <mxCell id="enquiry-api" parent="enquiry-service" style="rounded=1;arcSize=10;whiteSpace=wrap;html=1;fontFamily=Arial;fontSize=20;fontColor=#2c5a36;strokeColor=#98bd88;strokeWidth=1.5;fillColor=#ffffff;spacing=10;" value="&lt;b&gt;Enquiry API&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:16px&quot; color=&quot;#54774b&quot;&gt;FastAPI · :8104&lt;/font&gt;&lt;br&gt;&lt;font style=&quot;font-size:14px&quot; color=&quot;#6f8665&quot;&gt;Read-only stock enquiries&lt;/font&gt;" vertex="1">
+          <mxGeometry height="110" width="235" x="310" y="110" as="geometry" />
+        </mxCell>
+        <mxCell id="enquiry-db" parent="enquiry-service" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=14;fontFamily=Arial;fontSize=19;fontColor=#365e34;strokeColor=#98bd88;strokeWidth=1.5;fillColor=#e6f1dd;spacingTop=8;spacing=9;" value="&lt;b&gt;Enquiry-owned database&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:15px&quot;&gt;SQLite · read model + event IDs + checkpoint&lt;/font&gt;" vertex="1">
+          <mxGeometry height="95" width="390" x="90" y="300" as="geometry" />
+        </mxCell>
+        <mxCell id="worker-apply" edge="1" parent="enquiry-service" source="worker" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#8d9a83;strokeWidth=1.8;endArrow=block;endFill=1;fontFamily=Arial;fontSize=15;fontColor=#708164;defaultLabelBackgroundColor=page;" target="enquiry-db" value="Atomic apply">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="api-read" edge="1" parent="enquiry-service" source="enquiry-api" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#8d9a83;strokeWidth=1.8;endArrow=block;endFill=1;fontFamily=Arial;fontSize=15;fontColor=#708164;defaultLabelBackgroundColor=page;" target="enquiry-db" value="Read only">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="browser-console" edge="1" parent="1" source="browser" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#7096bd;strokeWidth=2;endArrow=block;endFill=1;fontFamily=Arial;fontSize=15;fontColor=#56799c;defaultLabelBackgroundColor=page;" target="console" value="Dashboard">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="console-stock" edge="1" parent="1" source="console" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;sourcePortConstraint=west;targetPortConstraint=west;jettySize=50;strokeColor=#7096bd;strokeWidth=2;endArrow=block;endFill=1;fontFamily=Arial;fontSize=15;fontColor=#56799c;defaultLabelBackgroundColor=page;" target="stock-app" value="Stock update">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="console-enquiry" edge="1" parent="1" source="console" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;sourcePortConstraint=east;targetPortConstraint=east;strokeColor=#7096bd;strokeWidth=2;endArrow=block;endFill=1;fontFamily=Arial;fontSize=15;fontColor=#56799c;defaultLabelBackgroundColor=page;" target="enquiry-api" value="Stock enquiry">
+          <mxGeometry relative="1" x="-0.0798" as="geometry">
+            <Array as="points">
+              <mxPoint x="1380" y="305" />
+              <mxPoint x="1380" y="505" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="stock-publish" edge="1" parent="1" source="stock-app" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#bc9550;strokeWidth=2;dashed=1;dashPattern=6 4;endArrow=block;endFill=1;fontFamily=Arial;fontSize=14;fontColor=#9e7938;defaultLabelBackgroundColor=page;" target="queue" value="Committed events">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="queue-delivery" edge="1" parent="1" source="queue" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#bc9550;strokeWidth=2;dashed=1;dashPattern=6 4;endArrow=block;endFill=1;fontFamily=Arial;fontSize=14;fontColor=#9e7938;defaultLabelBackgroundColor=page;" target="worker" value="Event delivery">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="safety" parent="1" style="rounded=1;arcSize=10;whiteSpace=wrap;html=1;fontFamily=Arial;fontSize=20;fontColor=#42643c;strokeColor=#c7d8bc;strokeWidth=1;fillColor=#f3f8ed;spacing=12;" value="&lt;b&gt;Reliable stock information, or an explicit unavailable response&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:16px&quot;&gt;Complete source sequence + verified feed age ≤ 30 seconds → verified stock. Otherwise: HTTP 503, stock withheld.&lt;/font&gt;" vertex="1">
+          <mxGeometry height="90" width="1300" x="60" y="810" as="geometry" />
+        </mxCell>
+        <mxCell id="legend-http" parent="1" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;fontFamily=Arial;fontSize=14;fontColor=#56799c;strokeColor=none;fillColor=none;" value="HTTP request paths" vertex="1">
+          <mxGeometry height="24" width="220" x="106" y="926" as="geometry" />
+        </mxCell>
+        <mxCell id="legend-http-line" edge="1" parent="1" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#7096bd;strokeWidth=2;endArrow=block;endFill=1;">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="60" y="938" as="sourcePoint" />
+            <mxPoint x="96" y="938" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="legend-events" parent="1" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;fontFamily=Arial;fontSize=14;fontColor=#9e7938;strokeColor=none;fillColor=none;" value="Asynchronous event flow (HTTP transport)" vertex="1">
+          <mxGeometry height="24" width="380" x="426" y="926" as="geometry" />
+        </mxCell>
+        <mxCell id="legend-events-line" edge="1" parent="1" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#bc9550;strokeWidth=2;dashed=1;dashPattern=6 4;endArrow=block;endFill=1;">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="380" y="938" as="sourcePoint" />
+            <mxPoint x="416" y="938" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="legend-data" parent="1" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;fontFamily=Arial;fontSize=14;fontColor=#708164;strokeColor=none;fillColor=none;" value="Service-owned database access" vertex="1">
+          <mxGeometry height="24" width="340" x="956" y="926" as="geometry" />
+        </mxCell>
+        <mxCell id="legend-data-line" edge="1" parent="1" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#8d9a83;strokeWidth=1.8;endArrow=block;endFill=1;">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="910" y="938" as="sourcePoint" />
+            <mxPoint x="946" y="938" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
