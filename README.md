@@ -44,7 +44,7 @@ The **Inventory Enquiry Microservice** is one business capability, comprising it
 
 [![Architecture showing the authoritative legacy system, durable event queue, and Inventory Enquiry Microservice with its API, worker and separately owned database](docs/architecture/inventory-enquiry.drawio.svg)](docs/architecture/inventory-enquiry.drawio.svg)
 
-[Editable draw.io source](docs/architecture/inventory-enquiry.drawio) · [Full-size SVG](docs/architecture/inventory-enquiry.drawio.svg)
+[Editable draw.io source](docs/architecture/inventory-enquiry.drawio) · [Full-size SVG](docs/architecture/inventory-enquiry.drawio.svg) · [Full-size PNG](docs/architecture/inventory-enquiry.drawio.png)
 
 Blue connections show HTTP request paths; dashed amber connections show asynchronous event flow over HTTP. Database access stays within its owning business boundary. Health, diagnostics and process-control routes are omitted for clarity.
 
@@ -127,7 +127,7 @@ Green **Running** boundaries show responding processes with active background co
 
 ```text
 abc-pharmaceuticals-micro/
-├── docs/architecture/   Editable draw.io diagram and SVG preview
+├── docs/architecture/   Editable draw.io diagram and SVG/PNG previews
 ├── services/
 │   ├── console.py       Interface host, HTTP proxy and process supervisor
 │   ├── legacy.py        Authoritative stock and outbox publisher
